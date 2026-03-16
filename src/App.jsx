@@ -725,19 +725,30 @@ const filtered = useMemo(() => {
   setTab("liste");
 };
 
-  const handleDelete = (id) => {
-    setPolicies((prev) => prev.filter((item) => item.id !== id));
+  const handleDelete = async (id) => {
+  const { error } = await supabase
+    .from("policies")
+    .delete()
+    .eq("id", id);
 
-    if (selectedPolicy && selectedPolicy.id === id) {
-      setSelectedPolicy(null);
-    }
+  if (error) {
+    console.error("Silme hatası:", error);
+    alert("Silme sırasında hata oluştu.");
+    return;
+  }
 
-    if (editingId === id) {
-      resetFormState();
-    }
+  setPolicies((prev) => prev.filter((item) => item.id !== id));
 
-    setDeleteTarget(null);
-  };
+  if (selectedPolicy && selectedPolicy.id === id) {
+    setSelectedPolicy(null);
+  }
+
+  if (editingId === id) {
+    resetFormState();
+  }
+
+  setDeleteTarget(null);
+};
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
