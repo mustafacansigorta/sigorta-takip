@@ -467,30 +467,22 @@ async function loadPolicies() {
     console.error("Veri çekme hatası:", error);
     return;
   }
+const mappedData = (data || []).map((item) => ({
+  ...item,
+  policyType: item.policy_type ?? "",
+  recordType: item.record_type ?? "",
+  identityNo: item.identity_no ?? "",
+  birthDate: item.birth_date ?? "",
+  policyNo: item.policy_no ?? "",
+  documentSerial: item.document_serial ?? "",
+  issueDate: item.issue_date ?? "",
+  startDate: item.start_date ?? "",
+  endDate: item.end_date ?? "",
+  createdAt: item.created_at ?? "",
+}));
 
-  setPolicies(data || []);
-}
-
-  const filtered = useMemo(() => {
-    const query = search.trim().toLocaleUpperCase("tr-TR");
-
-    return policies.filter((p) => {
-      const monthOk = selectedMonth === "TÜMÜ" || p.month === selectedMonth;
-      const text = [
-        p.customer,
-        p.policyType,
-        p.company,
-        p.plate,
-        p.phone,
-        p.identityNo,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLocaleUpperCase("tr-TR");
-
-      return monthOk && (!query || text.includes(query));
-    });
-  }, [policies, selectedMonth, search]);
+setPolicies(mappedData);
+  
 
   const dashboard = useMemo(() => {
     const monthFiltered = policies.filter((p) => p.month === selectedMonth);
