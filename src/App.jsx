@@ -467,21 +467,34 @@ async function loadPolicies() {
     console.error("Veri çekme hatası:", error);
     return;
   }
-const mappedData = (data || []).map((item) => ({
-  ...item,
-  policyType: item.policy_type ?? "",
-  recordType: item.record_type ?? "",
-  identityNo: item.identity_no ?? "",
-  birthDate: item.birth_date ?? "",
-  policyNo: item.policy_no ?? "",
-  documentSerial: item.document_serial ?? "",
-  issueDate: item.issue_date ?? "",
-  startDate: item.start_date ?? "",
-  endDate: item.end_date ?? "",
-  createdAt: item.created_at ?? "",
-}));
 
-setPolicies(mappedData);
+  const mappedData = (data || []).map((item) => ({
+    id: item.id,
+    month: item.month ?? "",
+    customer: item.customer ?? "",
+    relation: item.relation ?? "",
+    phone: item.phone ?? "",
+    company: item.company ?? "",
+    policyType: item.policy_type ?? "",
+    recordType: item.record_type ?? "",
+    identityNo: item.identity_no ?? "",
+    birthDate: item.birth_date ?? "",
+    policyNo: item.policy_no ?? "",
+    plate: item.plate ?? "",
+    documentSerial: item.document_serial ?? "",
+    issueDate: item.issue_date ?? "",
+    startDate: item.start_date ?? "",
+    endDate: item.end_date ?? "",
+    net: item.net ?? 0,
+    gross: item.gross ?? 0,
+    commission: item.commission ?? 0,
+    note: item.note ?? "",
+    createdAt: item.created_at ?? "",
+  }));
+
+  console.log("Mapped policies:", mappedData);
+  setPolicies(mappedData);
+}
   
 
   const dashboard = useMemo(() => {
