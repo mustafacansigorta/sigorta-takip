@@ -495,6 +495,27 @@ async function loadPolicies() {
   console.log("Mapped policies:", mappedData);
   setPolicies(mappedData);
 }
+const filtered = useMemo(() => {
+  const query = search.trim().toLocaleUpperCase("tr-TR");
+
+  return (policies || []).filter((p) => {
+    const monthOk = selectedMonth === "TÜMÜ" || p?.month === selectedMonth;
+
+    const text = [
+      p?.customer,
+      p?.policyType,
+      p?.company,
+      p?.plate,
+      p?.phone,
+      p?.identityNo,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLocaleUpperCase("tr-TR");
+
+    return monthOk && (!query || text.includes(query));
+  });
+}, [policies, selectedMonth, search]);
   
 
   const dashboard = useMemo(() => {
