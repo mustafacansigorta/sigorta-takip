@@ -1,3 +1,4 @@
+import { supabase } from "./supabase";
 import React, { useEffect, useMemo, useState } from "react";
 
 const STORAGE_KEY = "mustafa-sigorta-app-v7";
@@ -450,20 +451,25 @@ export default function App() {
   const [customerSuggestions, setCustomerSuggestions] = useState([]);
   const [form, setForm] = useState(emptyForm());
 
-  const [policies, setPolicies] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return initialPolicies;
-      const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : initialPolicies;
-    } catch {
-      return initialPolicies;
-    }
-  });
+  const [policies, setPolicies] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(policies));
-  }, [policies]);
+  loadPolicies();
+}, []);
+
+async function loadPolicies() {
+  const { data, error } = await supabase
+    .from("policies")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Veri çekme hatası:", error);
+    return;
+  }
+
+  setPolicies(data || []);
+}
 
   const filtered = useMemo(() => {
     const query = search.trim().toLocaleUpperCase("tr-TR");
@@ -640,44 +646,58 @@ export default function App() {
     setTab("ekle");
   };
 
-  const handleSave = () => {
-    if (!form.customer.trim()) return;
+  const handleSave = async () => {
+  if (!form.customer.trim()) return;
 
-    const payload = {
-      month: form.month,
-      customer: form.customer.trim(),
-      relation: form.relation.trim(),
-      phone: form.phone.trim(),
-      company: form.company.trim(),
-      policyType: form.policyType.trim(),
-      recordType: form.recordType.trim() || "Poliçe",
-      identityNo: form.identityNo.trim(),
-      birthDate: normalizeBirthDateForSave(form.birthDate.trim()),
-      policyNo: form.policyNo.trim(),
-      plate: form.plate.trim().toUpperCase(),
-      documentSerial: form.documentSerial.trim(),
-      issueDate: form.issueDate,
-      startDate: form.startDate,
-      endDate: form.endDate,
-      net: toNumberOrNull(form.net),
-      gross: toNumberOrNull(form.gross),
-      commission: toNumberOrNull(form.commission),
-      note: form.note.trim(),
-    };
-
-    if (editingId) {
-      setPolicies((prev) =>
-        prev.map((item) =>
-          item.id === editingId ? { ...item, ...payload } : item
-        )
-      );
-    } else {
-      setPolicies((prev) => [{ id: makeId(), ...payload }, ...prev]);
-    }
-
-    resetFormState();
-    setTab("liste");
+  const payload = {
+    month: form.month,
+    customer: form.customer.trim(),
+    relation: form.relation.trim(),
+    phone: form.phone.trim(),
+    company: form.company.trim(),
+    policy_type: form.policyType.trim(),
+    record_type: form.recordType.trim() || "Poliçe",
+    identity_no: form.identityNo.trim(),
+    birth_date: normalizeBirthDateForSave(form.birthDate.trim()),
+    policy_no: form.policyNo.trim(),
+    plate: form.plate.trim().toUpperCase(),
+    document_serial: form.documentSerial.trim(),
+    issue_date: form.issueDate || null,
+    start_date: form.startDate || null,
+    end_date: form.endDate || null,
+    net: toNumberOrNull(form.net),
+    gross: toNumberOrNull(form.gross),
+    commission: toNumberOrNull(form.commission),
+    note: form.note.trim(),
   };
+
+  if (editingId) {
+    const { error } = await supabase
+      .from("policies")
+      .update(payload)
+      .eq("id", editingId);
+
+    if (error) {
+      console.error("Güncelleme hatası:", error);
+      alert("Güncelleme sırasında hata oluştu.");
+      return;
+    }
+  } else {
+    const { error } = await supabase
+      .from("policies")
+      .insert([payload]);
+
+    if (error) {
+      console.error("Kayıt hatası:", error);
+      alert("Kayıt sırasında hata oluştu.");
+      return;
+    }
+  }
+
+  await loadPolicies();
+  resetFormState();
+  setTab("liste");
+};
 
   const handleDelete = (id) => {
     setPolicies((prev) => prev.filter((item) => item.id !== id));
