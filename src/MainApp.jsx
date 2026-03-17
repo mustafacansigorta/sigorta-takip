@@ -1034,11 +1034,11 @@ const filtered = useMemo(() => {
                   <Field label="Müşteri">
                     <div className="relative">
                       <input
-                        className="field"
-                        value={form.customer}
-                        onChange={(e) => handleCustomerChange(e.target.value)}
-                        placeholder="Müşteri adı yaz"
-                      />
+  className="field"
+  value={form.customer}
+  onChange={(e) => handleCustomerChange(e.target.value.toLocaleUpperCase("tr-TR"))}
+  placeholder="Müşteri adı yaz"
+/>
 
                       {customerSuggestions.length > 0 && (
                         <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-10 rounded-2xl border border-slate-200 bg-white p-2 shadow-lg">
