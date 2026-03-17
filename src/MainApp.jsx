@@ -1096,9 +1096,10 @@ const filtered = useMemo(() => {
                   <Field label="Telefon">
                     <input
   className="field"
-  value={form.phone}
+  value={"0" + (form.phone || "")}
   onChange={(e) => {
-    const numbers = e.target.value.replace(/\D/g, "").slice(0, 10);
+    const value = e.target.value.replace(/\D/g, ""); // sadece rakam
+    const numbers = value.slice(1, 11); // 0'dan sonrasını al (10 hane)
     setForm({ ...form, phone: numbers });
   }}
   placeholder="Telefon No"
