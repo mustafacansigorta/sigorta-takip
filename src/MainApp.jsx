@@ -1095,12 +1095,15 @@ const filtered = useMemo(() => {
 
                   <Field label="Telefon">
                     <input
-                      className="field"
-                      value={form.phone}
-                      onChange={(e) =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
-                    />
+  className="field"
+  value={form.phone}
+  onChange={(e) => {
+    const numbers = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setForm({ ...form, phone: numbers });
+  }}
+  placeholder="Telefon No"
+  type="tel"
+/>
                   </Field>
 
                   <Field label="TC Kimlik / Vergi No">
