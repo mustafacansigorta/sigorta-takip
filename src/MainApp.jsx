@@ -1109,12 +1109,15 @@ const filtered = useMemo(() => {
 
                   <Field label="TC Kimlik / Vergi No">
                     <input
-                      className="field"
-                      value={form.identityNo}
-                      onChange={(e) =>
-                        setForm({ ...form, identityNo: e.target.value })
-                      }
-                    />
+  className="field"
+  value={form.tcNo}
+  onChange={(e) => {
+    const numbers = e.target.value.replace(/\D/g, "");
+    setForm({ ...form, tcNo: numbers });
+  }}
+  placeholder="TC Kimlik No / Vergi No"
+  type="tel"
+/>
                   </Field>
                   <Field label="Poliçe No">
   <input
